@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11 -pthread  -rdynamic CMakeFiles/usb_test_pub.dir/usb_test_pub.cpp.o CMakeFiles/usb_test_pub.dir/SerialPort.cpp.o  -o usb_test_pub 

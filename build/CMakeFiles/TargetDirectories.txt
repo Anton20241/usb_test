@@ -1,0 +1,4 @@
+/home/anton20241/usb_test/build/CMakeFiles/rebuild_cache.dir
+/home/anton20241/usb_test/build/CMakeFiles/edit_cache.dir
+/home/anton20241/usb_test/build/CMakeFiles/usb_test_sub.dir
+/home/anton20241/usb_test/build/CMakeFiles/usb_test_pub.dir

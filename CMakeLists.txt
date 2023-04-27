@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 2.8)
+PROJECT (usb_test)
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
+add_executable( usb_test_pub usb_test_pub.cpp Exception.hpp SerialPort.cpp SerialPort.hpp )
+add_executable( usb_test_sub usb_test_sub.cpp Exception.hpp SerialPort.cpp SerialPort.hpp )
