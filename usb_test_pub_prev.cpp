@@ -11,7 +11,7 @@ using namespace mn::CppLinuxSerial;
 
 int main() {
 	// Create serial port object and open serial port
-    SerialPort serialPort("/dev/ttyUSB1", 256000);
+    SerialPort serialPort("/dev/ttyUSB0", 256000);
 	// SerialPort serialPort("/dev/ttyACM0", 13000);
     serialPort.SetTimeout(-1); // Block when reading until any data is received
 	serialPort.Open();
@@ -45,30 +45,18 @@ int main() {
                                                         {0x16, 0x0d, 0x30, 0, 0, 0, 0, 1, 0, 0xFF,  0x7F, 0x08, 0x29}
         };
 
-        std::vector<uint8_t>           fingersResComb = {0x11, 0x0d, 0x30, 0, 0, 0, 0, 0, 0, 0,     0,    0x88, 0x6D,
-                                                         0x12, 0x0d, 0x30, 0, 0, 0, 0, 0, 0, 0,     0,    0x98, 0x87,
-                                                         0x13, 0x0d, 0x30, 0, 0, 0, 0, 0, 0, 0,     0,    0x88, 0xA3,
-                                                         0x14, 0x0d, 0x30, 0, 0, 0, 0, 0, 0, 0,     0,    0x80, 0x1E,
-                                                         0x15, 0x0d, 0x30, 0, 0, 0, 0, 0, 0, 0,     0,    0x98, 0x83,
-                                                         0x16, 0x0d, 0x30, 0, 0, 0, 0, 1, 0, 0xFF,  0x7F, 0x08, 0x29
-        };
-
+        uint32_t send_bytes = 0;
+        while (!send_bytes) send_bytes = serialPort.Write(&(fingersReq[FING_INDEX][0]), fingersReq[FING_INDEX].size());
         std::chrono::system_clock::time_point from_send_to_get_tp = std::chrono::system_clock::now();
-        for (size_t i = 0; i < fingersReq.size(); i++){
-            uint32_t send_bytes = 0;
-            while (!send_bytes) send_bytes = serialPort.Write(&(fingersReq[i][0]), fingersReq[i].size());
-            printf("\n[SEND]:\n");
-            for (size_t k = 0; k < send_bytes; k++){
-            printf("[%u]", fingersReq[i][k]);
-            }
-            printf("\nsend_bytes = %u\n", send_bytes);
-            std::this_thread::sleep_for(std::chrono::milliseconds(1));
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(2));
 
-        uint8_t read_buf[78] = {0};
+        // printf("\n[SEND]:\n");
+        // for (size_t i = 0; i < send_bytes; i++){
+        //   printf("[%u]", fingersReq[FING_INDEX][i]);
+        // }
+        // printf("\nsend_bytes = %u\n", send_bytes);
+
+        uint8_t read_buf[13] = {0};
         uint32_t get_bytes = 0;
-
         while (!get_bytes) get_bytes = serialPort.Read(read_buf, sizeof(read_buf));
 
         std::chrono::system_clock::time_point from_send_to_get_cur_tp = std::chrono::system_clock::now();
@@ -78,12 +66,12 @@ int main() {
         printf("timeFailCount = %u\n", timeFailCount);
         printf("msgFailcount = %u\n", msgFailcount);
 
-        if (from_send_to_get_ex_time.count() * 1000000 > 12000){
+        if (from_send_to_get_ex_time.count() * 1000000 > 7000){
             timeFailCount++;
         }
 
         for (size_t i = 0; i < get_bytes; i++){
-            if(read_buf[i] != fingersResComb[i]){
+            if(read_buf[i] != fingersRes[FING_INDEX][i]){
                 msgFailcount++;
                 break;
             }

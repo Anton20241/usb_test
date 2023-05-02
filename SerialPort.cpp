@@ -402,7 +402,9 @@ namespace CppLinuxSerial {
 
 	uint32_t SerialPort::Write(const uint8_t* dataToWrite, uint32_t dataToWriteSize) {
 
-		uint32_t send_bytes = write(fileDesc_, dataToWrite, dataToWriteSize);
+		uint32_t send_bytes = 0;
+		while(send_bytes < dataToWriteSize) send_bytes = write(fileDesc_, dataToWrite, dataToWriteSize);
+
 		start_tp = std::chrono::system_clock::now();
 
 		if (send_bytes < 0) {
@@ -431,20 +433,18 @@ namespace CppLinuxSerial {
 
 	uint32_t SerialPort::Read(uint8_t* readBuf, uint32_t readBufSize){
 		memset(readBuf, 0, readBufSize);
-		int bytes = 0;
-		while(bytes < readBufSize){
-			std::chrono::system_clock::time_point finish_tp = std::chrono::system_clock::now();
-			std::chrono::duration<double> from_start_to_finish = finish_tp - start_tp;
-			std::cout << "from_start_to_finish time: " << from_start_to_finish.count() * 1000000 << std::endl;
-			ioctl(fileDesc_, FIONREAD, &bytes);
-			std::cout << "bytes = " << bytes << std::endl;
-		}
+		// int bytes = 0;
+		// while(bytes < readBufSize){
+		// 	std::chrono::system_clock::time_point finish_tp = std::chrono::system_clock::now();
+		// 	std::chrono::duration<double> from_start_to_finish = finish_tp - start_tp;
+		// 	std::cout << "from_start_to_finish time: " << from_start_to_finish.count() * 1000000 << std::endl;
+		// 	ioctl(fileDesc_, FIONREAD, &bytes);
+		// 	std::cout << "bytes = " << bytes << std::endl;
+		// }
 
-
-
-
-		int get_bytes = read(fileDesc_, readBuf, readBufSize);
-
+		int get_bytes = 0;
+		while(get_bytes < readBufSize) get_bytes = read(fileDesc_, readBuf, readBufSize);
+		
 		if (get_bytes < 0) {
 			printf("Error reading: %s", strerror(errno));
 			return 0;
